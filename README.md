@@ -7,6 +7,25 @@ Ensure both files are executable
 Ensure CGI module is enabled in the Apache configs
 Browse to http://site.name/cgi-bin/bash.cgi
 
+## APACHE SETUP
+Apache setup requires CGI to be enabled.
+
+1. Enable the CGI mod with the command
+	# a2enmod cgi
+2. Place the lincontrol.conf Virtual Host file in /etc/apache2/sites-available
+3. Edit the file for your setup:
+3.1 ServerAlias must be a DNS name discoverable on your setup. You can do this simply by adding a line to /etc/hosts:
+	127.0.0.1	www.lincontrol.local	lincontrol.local
+3.2 DocumentRoot must be a new folder in your /var/www/
+4. Create the necessary folders:
+	# mkdir -p /var/www/lincontrol/cgi-bin/
+5. Copy 'bash.cgi' and 'logviewer.cgi' into the new cgi-bin folder
+6. Enable the new virtual host:
+	# a2ensite lincontrol.conf
+7. Reload Apache:
+	# service apache2 reload
+8. Navigate to www.lincontrol.local/cgi-bin/bash.cgi
+
 ## CONFIGURATION
 Configure the Service name, Config file in 'bash.cgi':
     CONFIG_FILE=<full path to config file>
