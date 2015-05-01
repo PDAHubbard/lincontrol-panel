@@ -1,21 +1,46 @@
 #!/bin/bash
-
+#
+# 01/05/15: Authored by Peter Hubbard - peterhjr@gmail.com
+#
+# Changelog: 
+# 00001 - remove default choice from radio buttons to prevent automatic submission.
+#
+#####################################################################################
+#
+#
+###############
+#CONFIGURATION#
+###############
+# Enter the full path to the configuration file to edit here
+# The file must be writable by the www-data user/group
 CONFIG_FILE=/home/fargo/dev/scripts/lincontrol/file.conf
 
+# Enter the name of the service to be controlled by the panel
+# 
+SERVICE_NAME=atd
+
+#####################################################################################
+#
+#
+################
+# HTML HEADERS #
+################
 echo "Content-type: text/html"
-#echo "Content-type: application/x-www-form-urlencoded"
 # Blank line required between content type and html
 # We use an empty echo as bash does not recognise \n as a newline.
 echo
 
 echo "<html>"
-echo "<head><title>Bash CGI</title></head>"
+echo "<head><title>Linux Control Panel</title></head>"
 echo "<body>"
 
 
-############
-# FUNCTIONS#
-############
+#####################################################################################
+#
+#
+#############
+# FUNCTIONS #
+#############
 # This code for getting code from post data is from http://oinkzwurgl.org/bash_cgi and 
 # was written by Phillippe Kehi <phkehi@gmx.net> and flipflip industries
 # (internal) routine to store POST data
@@ -112,7 +137,12 @@ function cgi_getvars()
 # register all GET and POST variables
 cgi_getvars BOTH ALL
 
-##################################################################
+#####################################################################################
+#
+#
+########################
+# STATUS messages here #
+########################
 
 # test for POSTDATA - if present then write changes to the file
 if [[ $configdata ]]
@@ -121,7 +151,6 @@ then
 	echo $configdata | sed -e "s/\r/\n/g" > $CONFIG_FILE 
 	echo "<font color=red>File $CONFIG_FILE saved.</font><br>"
 fi
-
 # POSTDATA
 
 
@@ -129,15 +158,21 @@ fi
 if [ $CMD ]
 then
 	case "$CMD" in
-		ifconfig)
-			echo "Output of ifconfig :<pre>"
-			/sbin/ifconfig
+		startservice)
+			echo "Starting $SERVICE_NAME :<pre>"
+			service $SERVICE_NAME start
 			echo "</pre>"
 			;;
 
-		lsal)
-			echo "Output of ls $folder1 :<pre>"
-			/bin/ls -al "$folder1"
+		stopservice)
+			echo "Stopping $SERVICE_NAME :<pre>"
+			service $SERVICE_NAME stop
+			echo "</pre>"
+			;;
+		
+		restartservice)
+			echo "Restarting $SERVICE_NAME :<pre>"
+			service $SERVICE_NAME restart
 			echo "</pre>"
 			;;
 
@@ -158,8 +193,8 @@ cat <<EOF
 <p>
 <p>
 
-Choose which command you want to run
-<form method=post enctype=application/x-www-form-urlencoded>
+Current contents of $CONFIG_FILE
+<form name=configform method=post enctype=application/x-www-form-urlencoded>
 
 <textarea name=configdata rows=4 cols=50>
 EOF
@@ -167,24 +202,19 @@ EOF
 cat $CONFIG_FILE
 
 cat <<EOF
-</textarea><br>	
-
+</textarea><br>
 <button type=submit>Save Changes</button><br>
-<!-- <input type=submit name=cmd value='Save Changes'><br> -->
 </form>
 
 <form method=get>
-<input type=radio name=CMD value=startservice checked>START Service  <br>
+<input type=radio name=CMD value=startservice>START Service  <br>
 <input type=radio name=CMD value=stopservice>STOP Service<br>
 <input type=radio name=CMD value=restartservice>RESTART Service<br>
 <input type=submit>
 </form>
 
-<iframe src="/cgi-bin/logviewer.cgi" width=400 height=300>
+<iframe src="/cgi-bin/logviewer.cgi" width=800 height=300>
 </iframe>
-
-
-
 </body>
 </html>
 EOF
