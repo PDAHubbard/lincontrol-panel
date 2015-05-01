@@ -160,19 +160,19 @@ then
 	case "$CMD" in
 		startservice)
 			echo "Starting $SERVICE_NAME :<pre>"
-			service $SERVICE_NAME start
+# Add command to START the service
 			echo "</pre>"
 			;;
 
 		stopservice)
 			echo "Stopping $SERVICE_NAME :<pre>"
-			service $SERVICE_NAME stop
+# Add command to STOP the service
 			echo "</pre>"
 			;;
 		
 		restartservice)
 			echo "Restarting $SERVICE_NAME :<pre>"
-			service $SERVICE_NAME restart
+# Add command top RESTART the service
 			echo "</pre>"
 			;;
 

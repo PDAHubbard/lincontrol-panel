@@ -1,6 +1,9 @@
 #!/bin/bash
 
 LOG_FILE=/var/log/messages
+
+
+
 GREP_STRING=`echo "$QUERY_STRING" | sed -n 's/^.*grep=\([^&]*\).*$/\1/p' | sed "s/%20/ /g"`
 NUMLINES=`echo "$QUERY_STRING" | sed -n 's/^.*numlines=\([^&]*\).*$/\1/p' | sed "s/%20/ /g"`
 
