@@ -6,6 +6,7 @@ LOG_FILE=/var/log/apache2/lincontrol_access.log
 
 GREP_STRING=`echo "$QUERY_STRING" | sed -n 's/^.*grep=\([^&]*\).*$/\1/p' | sed "s/%20/ /g"`
 NUMLINES=`echo "$QUERY_STRING" | sed -n 's/^.*numlines=\([^&]*\).*$/\1/p' | sed "s/%20/ /g"`
+INTERVAL=`echo "$QUERY_STRING" | sed -n 's/^.*interval=\([^&]*\).*$/\1/p' | sed "s/%20/ /g"`
 
 echo "Content-type: text/html"
 echo ""
@@ -13,13 +14,25 @@ echo ""
 cat <<EOF
 <html>
 <head>
-<meta http-equiv="refresh" content="3">
-</head>
-<body>
+<meta http-equiv="refresh" content=$INTERVAL>
+</script> 
+</head> 
+
+<body> 
 
 <form method=get>
+
+Update interval (in seconds): 
+<select name="interval" id="interval"> 
+<option value="">Off</option> 
+<option value="1">1</option> 
+<option value="3">3</option> 
+<option value="5">5</option> 
+</select> 
+
+
 <label for=grep>Search string</label>
-<input name=grep>
+<input name=grep value=$GREP_STRING>
 <select name=numlines>
 	<option value="">Lines</option>
 	<option value="25">25</option>
