@@ -3,8 +3,9 @@
 # 01/05/15: Authored by Peter Hubbard - peterhjr@gmail.com
 #
 # Changelog: 
-# 00001 - remove default choice from radio buttons to prevent automatic submission.
-# 00002 - Move live log viewer into main page and create divs for 2 sections
+# 0.0001 - remove default choice from radio buttons to prevent automatic submission.
+# 0.0002 - Move live log viewer into main page and create divs for 2 sections
+# 0.0003 - Remove Ajax log viewer.
 #
 #####################################################################################
 #
@@ -16,9 +17,12 @@
 # The file must be writable by the www-data user/group
 CONFIG_FILE=/home/fargo/dev/scripts/lincontrol/file.conf
 
-# Enter the name of the service to be controlled by the panel
+PROGRAMPATH=/home/fargo/dev/scripts/lincontrol/program
+
+
+# Get the name of the service to be controlled by the panel
 # 
-SERVICE_NAME=atd
+SERVICE_NAME=`basename $PROGRAMPATH`
 
 #####################################################################################
 #
@@ -34,7 +38,6 @@ echo
 echo "<html>"
 echo "<head><title>Linux Control Panel</title>"
 
-echo "<script type=text/javascript src=/ajax-logtail.js> </script>"
 echo "</head>"
 echo "<body>"
 
@@ -164,19 +167,19 @@ then
 	case "$CMD" in
 		startservice)
 			echo "Starting $SERVICE_NAME :<pre>"
-# Add command to START the service
+			$PROGRAMPATH/start.sh
 			echo "</pre>"
 			;;
 
 		stopservice)
 			echo "Stopping $SERVICE_NAME :<pre>"
-# Add command to STOP the service
+			$PROGRAMPATH/stop.sh
 			echo "</pre>"
 			;;
 		
-		restartservice)
-			echo "Restarting $SERVICE_NAME :<pre>"
-# Add command top RESTART the service
+		reloadservice)
+			echo "Reloading $SERVICE_NAME :<pre>"
+			$PROGRAMPATH/reload.sh
 			echo "</pre>"
 			;;
 
@@ -195,6 +198,12 @@ cat <<EOF
 <h2>Linux Control Panel</h2>
 </center>
 <p>
+EOF
+
+echo "Program $SERVICE_NAME has status "
+$PROGRAMPATH/status.sh
+
+cat <<EOF
 <p>
         <div id="controls" style="border:solid 1px #dddddd; width:500px; margin-left:25px; font-size:14px; font-family:san-serif,tahoma,arial;
 	        padding-left:15px; padding-right:15px; padding-top:10px; padding-bottom:20px;
@@ -213,27 +222,15 @@ cat <<EOF
 <button type=submit>Save Changes</button><br>
 </form>
 
-<form method=post>
-<input type=radio name=CMD value=startservice>START Service  <br>
-<input type=radio name=CMD value=stopservice>STOP Service<br>
-<input type=radio name=CMD value=restartservice>RESTART Service<br>
-<input type=submit>
+<form id="servicecontrol" method=post>
+<input type=button name=startservice value="START $SERVICE_NAME" onClick="document.getElementById('CMD').value='startservice'; form.submit(); return false;"> 
+<input type=button name=stopservice value="STOP $SERVICE_NAME" onClick="document.getElementById('CMD').value='stopservice'; form.submit(); return false;"> 
+<input type=button name=reloadservice value="RELOAD $SERVICE_NAME" onClick="document.getElementById('CMD').value='reloadservice'; form.submit(); return false;"> 
+<input type=hidden id=CMD name=CMD value='' />
 </form>
 </div>
 
-<div id="logcontrols" style="width:490px; margin-left:575px; margin-top:-300px; height:30px; overflow:auto;">
-                <button onclick="getLog('start');">Start Viewer</button>
-                <button onclick="stopTail();">Stop Viewer</button>
-        </div>
-
-        <div id="log" style="border:solid 1px #dddddd; width:490px; margin-left:575px; margin-top:20px; font-size:11px;
-	        padding-left:5px; padding-right:10px; padding-top:10px; padding-bottom:20px;
-		        margin-bottom:10px; text-align:left; height: 150px; overflow:auto;">
-
-		<p>Logs will appear here.</p>
-</div>
-
-<div id="bashlogger" style="width:509px; margin-left:575px; margin-top:20px; overflow:auto;">
+<div id="bashlogger" style="width:509px; margin-left:575px; margin-top:-220px; overflow:auto;">
 <iframe src="/cgi-bin/logviewer.cgi" width=490 height=300>
 </iframe>
 </div>
