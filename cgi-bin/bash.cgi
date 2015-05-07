@@ -6,6 +6,8 @@
 # 0.0001 - remove default choice from radio buttons to prevent automatic submission.
 # 0.0002 - Move live log viewer into main page and create divs for 2 sections
 # 0.0003 - Remove Ajax log viewer.
+# 0.0004 - Add logout link
+# 0.0005 - Add bootstrap CSS
 #
 #####################################################################################
 #
@@ -19,6 +21,7 @@ CONFIG_FILE=/home/fargo/dev/scripts/lincontrol/file.conf
 
 PROGRAMPATH=/home/fargo/dev/scripts/lincontrol/program
 
+LOGFILE=lincontrol_activity.log
 
 # Get the name of the service to be controlled by the panel
 # 
@@ -35,12 +38,38 @@ echo "Content-type: text/html"
 # We use an empty echo as bash does not recognise \n as a newline.
 echo
 
-echo "<html>"
-echo "<head><title>Linux Control Panel</title>"
+cat <<EOF
+<html><head><title>Lincontrol admin panel</title></head></html><body>
 
-echo "</head>"
-echo "<body>"
+                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+                <link href="/css/bootstrap.min.css" rel="stylesheet">
+                <!--[if lt IE 9]>
+                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+                <link href="/css/styles.css" rel="stylesheet">
 
+<div id="top-nav" class="navbar navbar-inverse navbar-static-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Main Dashboard</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#"><i class="glyphicon glyphicon-user"></i>$REMOTE_USER<span class="caret"></span></a>
+                </li>
+                <li><a href="/index.html#logout"><i class="glyphicon glyphicon-lock"></i> Logout</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- /container -->
+</div>
+EOF
 
 #####################################################################################
 #
@@ -48,6 +77,19 @@ echo "<body>"
 #############
 # FUNCTIONS #
 #############
+#
+# This functions writes an entry to the log file
+# First parameter is the action
+function logentry()
+{
+	TIME=`date`
+
+	echo "$TIME / $REMOTE_HOST / $REMOTE_USER / $1 / " >> $LOGFILE
+
+}
+
+
+
 # This code for getting code from post data is from http://oinkzwurgl.org/bash_cgi and 
 # was written by Phillippe Kehi <phkehi@gmx.net> and flipflip industries
 # (internal) routine to store POST data
@@ -154,9 +196,11 @@ cgi_getvars BOTH ALL
 # test for POSTDATA - if present then write changes to the file
 if [[ $configdata ]]
 then
+	#Log this change
+	logentry "Changed file $CONFIG_FILE"
 	#Strip the ^M (return) character
 	echo $configdata | sed -e "s/\r/\n/g" > $CONFIG_FILE 
-	echo "<font color=red>File $CONFIG_FILE saved.</font><br>"
+	echo "<pre><font color=red>File $CONFIG_FILE saved.</font><br></pre>"
 fi
 # POSTDATA
 
@@ -166,19 +210,19 @@ if [ $CMD ]
 then
 	case "$CMD" in
 		startservice)
-			echo "Starting $SERVICE_NAME :<pre>"
+			echo "<pre>Starting $SERVICE_NAME :"
 			$PROGRAMPATH/start.sh
 			echo "</pre>"
 			;;
 
 		stopservice)
-			echo "Stopping $SERVICE_NAME :<pre>"
+			echo "<pre>Stopping $SERVICE_NAME :"
 			$PROGRAMPATH/stop.sh
 			echo "</pre>"
 			;;
 		
 		reloadservice)
-			echo "Reloading $SERVICE_NAME :<pre>"
+			echo "<pre>Reloading $SERVICE_NAME :"
 			$PROGRAMPATH/reload.sh
 			echo "</pre>"
 			;;
@@ -191,28 +235,16 @@ fi
 
 # print out the form
 
-# page header
 cat <<EOF
-<p>
-<center>
-<h2>Linux Control Panel</h2>
-</center>
-<p>
-EOF
+<div class="col-md-6">
+ <div class="panel panel-default">
+         <div class="panel-heading">
+               <h4>Current contents of $CONFIG_FILE</h4></div>
+                        <div class="panel-body">
 
-echo "Program $SERVICE_NAME has status "
-$PROGRAMPATH/status.sh
-
-cat <<EOF
-<p>
-        <div id="controls" style="border:solid 1px #dddddd; width:500px; margin-left:25px; font-size:14px; font-family:san-serif,tahoma,arial;
-	        padding-left:15px; padding-right:15px; padding-top:10px; padding-bottom:20px;
-		        margin-top:20px; margin-bottom:10px; text-align:left;">
-
-Current contents of $CONFIG_FILE
 <form name=configform method=post enctype=application/x-www-form-urlencoded>
 
-<textarea name=configdata rows=4 cols=50>
+<textarea name=configdata rows=8 cols=70>
 EOF
 
 cat $CONFIG_FILE
@@ -223,16 +255,46 @@ cat <<EOF
 </form>
 
 <form id="servicecontrol" method=post>
-<input type=button name=startservice value="START $SERVICE_NAME" onClick="document.getElementById('CMD').value='startservice'; form.submit(); return false;"> 
-<input type=button name=stopservice value="STOP $SERVICE_NAME" onClick="document.getElementById('CMD').value='stopservice'; form.submit(); return false;"> 
-<input type=button name=reloadservice value="RELOAD $SERVICE_NAME" onClick="document.getElementById('CMD').value='reloadservice'; form.submit(); return false;"> 
+                    <div class="btn-group btn-group-justified">
+                        <a href="#" class="btn btn-primary col-sm-3" onClick="document.getElementById('CMD').value='startservice'; document.forms['servicecontrol'].submit(); return false;">
+                            <i class="glyphicon glyphicon-play"></i>
+                            <br> START $SERVICE_NAME
+                        </a>
+                        <a href="#" class="btn btn-primary col-sm-3" onClick="document.getElementById('CMD').value='stopservice'; document.forms['servicecontrol'].submit(); return false;">
+                            <i class="glyphicon glyphicon-stop"></i>
+                            <br> STOP $SERVICE_NAME
+                        </a>
+                        <a href="#" class="btn btn-primary col-sm-3" onClick="document.getElementById('CMD').value='reloadservice'; document.forms['servicecontrol'].submit(); return false;">
+                            <i class="glyphicon glyphicon-refresh"></i>
+                            <br> RELOAD $SERVICE_NAME
+                        </a>
+                    </div>
+
+
 <input type=hidden id=CMD name=CMD value='' />
 </form>
+EOF
+
+echo "<pre>Program $SERVICE_NAME has status "
+$PROGRAMPATH/status.sh
+
+cat <<EOF
+</pre>
+			</div>
+	</div>
+</div>
 </div>
 
-<div id="bashlogger" style="width:509px; margin-left:575px; margin-top:-220px; overflow:auto;">
-<iframe src="/cgi-bin/logviewer.cgi" width=490 height=300>
-</iframe>
+<div class="col-md-6">
+ <div class="panel panel-default">
+         <div class="panel-heading">
+               <h4>Live log</h4></div>
+                        <div class="panel-body">
+				<iframe src="/cgi-bin/logviewer.cgi" width=610 height=315>
+				</iframe>
+			</div>
+	</div>
+ </div>
 </div>
 
 </body>
