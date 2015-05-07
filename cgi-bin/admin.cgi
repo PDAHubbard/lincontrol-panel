@@ -6,6 +6,11 @@
 
 echo "content-type: html"
 echo ""
+if [ "$REMOTE_USER" != "admin" ]
+then
+	#echo "<html><head><body onload='window.location.href=/cgi-bin/bash.cgi'></body></head></html>"
+	echo "<html><head><meta http-equiv=refresh content='0;URL=/cgi-bin/bash.cgi'></head></html>"
+else
 
 cat <<EOF
 <html><head><title>Lincontrol admin panel</title></head></html><body>
@@ -44,14 +49,6 @@ EOF
 USERNAME=`echo "$QUERY_STRING" | sed -n 's/^.*username=\([^&]*\).*$/\1/p' | sed "s/%20/ /g"`
 PASSWORD=`echo "$QUERY_STRING" | sed -n 's/^.*password=\([^&]*\).*$/\1/p' | sed "s/%20/ /g"`
 HTPASSFL=/var/www/lincontrol/.htpasswd
-
-
-if [ "$REMOTE_USER" != "admin" ]
-then
-	#echo "<html><head><body onload='window.location.href=/cgi-bin/bash.cgi'></body></head></html>"
-	echo "<html><head><meta http-equiv=refresh content='0;URL=/cgi-bin/bash.cgi'></head></html>"
-else
-
 
 if [ -n "$USERNAME" ] && [ -n "$PASSWORD" ]
 then
