@@ -1,10 +1,10 @@
 window.onload = function()
 {
    if (window.location.hash === '#logout') {
-	   console.log("Logging out");
-	       var http = getHTTPObject();
-	           http.open("get", this.action, false, "null", "null");
-		       http.send("");
+	  // console.log("Logging out from "+this.action);
+	  var http = getHTTPObject();
+	  http.open("get", "/cgi-bin/admin.cgi", false, "null", "null");
+	  http.send("");
    }
     var anchors = document.getElementsByTagName("a");
     for (var foo = 0; foo < anchors.length; foo++) {
