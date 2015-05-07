@@ -15,7 +15,6 @@ cat <<EOF
 <html>
 <head>
 <meta http-equiv="refresh" content=$INTERVAL>
-</script> 
 </head> 
 
 <body> 
