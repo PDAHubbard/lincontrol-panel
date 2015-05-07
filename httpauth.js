@@ -1,9 +1,9 @@
 window.onload = function()
 {
    if (window.location.hash === '#logout') {
-	   alert("Logging out!"); 
+	   console.log("Logging out");
 	       var http = getHTTPObject();
-	           http.open("get", this.parentNode.action, false, "null", "null");
+	           http.open("get", this.action, false, "null", "null");
 		       http.send("");
    }
     var anchors = document.getElementsByTagName("a");
