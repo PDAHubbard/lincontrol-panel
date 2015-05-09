@@ -41,33 +41,33 @@ echo
 cat <<EOF
 <html><head><title>Lincontrol admin panel</title></head></html><body>
 
-                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-                <link href="/css/bootstrap.min.css" rel="stylesheet">
-                <!--[if lt IE 9]>
-                        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
-                <![endif]-->
-                <link href="/css/styles.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link href="/css/bootstrap.min.css" rel="stylesheet">
+<!--[if lt IE 9]>
+<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link href="/css/styles.css" rel="stylesheet">
 
 <div id="top-nav" class="navbar navbar-inverse navbar-static-top">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Main Dashboard</a>
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#"><i class="glyphicon glyphicon-user"></i>$REMOTE_USER<span class="caret"></span></a>
-                </li>
-                <li><a href="/index.html#logout"><i class="glyphicon glyphicon-lock"></i> Logout</a></li>
-            </ul>
-        </div>
-    </div>
-    <!-- /container -->
+<div class="container-fluid">
+<div class="navbar-header">
+<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</button>
+<a class="navbar-brand" href="#">Main Dashboard</a>
+</div>
+<div class="navbar-collapse collapse">
+<ul class="nav navbar-nav navbar-right">
+<li class="dropdown">
+<a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#"><i class="glyphicon glyphicon-user"></i>$REMOTE_USER<span class="caret"></span></a>
+</li>
+<li><a href="/index.html#logout"><i class="glyphicon glyphicon-lock"></i> Logout</a></li>
+</ul>
+</div>
+</div>
+<!-- /container -->
 </div>
 EOF
 
@@ -98,9 +98,9 @@ function cgi_get_POST_vars()
 	# check content type
 	# FIXME: not sure if we could handle uploads with this..
 	# FIXME: Removed this warning as it was still happening even with the content type set.
-#	[ "${CONTENT_TYPE}" != "application/x-www-form-urlencoded" ] && \
-#		echo "bash.cgi warning: you should probably use MIME type "\
-#		"application/x-www-form-urlencoded!" 1>&2
+	#	[ "${CONTENT_TYPE}" != "application/x-www-form-urlencoded" ] && \
+		#		echo "bash.cgi warning: you should probably use MIME type "\
+		#		"application/x-www-form-urlencoded!" 1>&2
 	# save POST variables (only first time this is called)
 	[ -z "$QUERY_STRING_POST" \
 		-a "$REQUEST_METHOD" = "POST" -a ! -z "$CONTENT_LENGTH" ] && \
@@ -220,7 +220,7 @@ then
 			$PROGRAMPATH/stop.sh
 			echo "</pre>"
 			;;
-		
+
 		reloadservice)
 			echo "<pre>Reloading $SERVICE_NAME :"
 			$PROGRAMPATH/reload.sh
@@ -237,10 +237,10 @@ fi
 
 cat <<EOF
 <div class="col-md-6">
- <div class="panel panel-default">
-         <div class="panel-heading">
-               <h4>Current contents of $CONFIG_FILE</h4></div>
-                        <div class="panel-body">
+<div class="panel panel-default">
+<div class="panel-heading">
+<h4>Current contents of $CONFIG_FILE</h4></div>
+<div class="panel-body">
 
 <form name=configform method=post enctype=application/x-www-form-urlencoded>
 
@@ -255,20 +255,20 @@ cat <<EOF
 </form>
 
 <form id="servicecontrol" method=post>
-                    <div class="btn-group btn-group-justified">
-                        <a href="#" class="btn btn-primary col-sm-3" onClick="document.getElementById('CMD').value='startservice'; document.forms['servicecontrol'].submit(); return false;">
-                            <i class="glyphicon glyphicon-play"></i>
-                            <br> START $SERVICE_NAME
-                        </a>
-                        <a href="#" class="btn btn-primary col-sm-3" onClick="document.getElementById('CMD').value='stopservice'; document.forms['servicecontrol'].submit(); return false;">
-                            <i class="glyphicon glyphicon-stop"></i>
-                            <br> STOP $SERVICE_NAME
-                        </a>
-                        <a href="#" class="btn btn-primary col-sm-3" onClick="document.getElementById('CMD').value='reloadservice'; document.forms['servicecontrol'].submit(); return false;">
-                            <i class="glyphicon glyphicon-refresh"></i>
-                            <br> RELOAD $SERVICE_NAME
-                        </a>
-                    </div>
+<div class="btn-group btn-group-justified">
+<a href="#" class="btn btn-primary col-sm-3" onClick="document.getElementById('CMD').value='startservice'; document.forms['servicecontrol'].submit(); return false;">
+<i class="glyphicon glyphicon-play"></i>
+<br> START $SERVICE_NAME
+</a>
+<a href="#" class="btn btn-primary col-sm-3" onClick="document.getElementById('CMD').value='stopservice'; document.forms['servicecontrol'].submit(); return false;">
+<i class="glyphicon glyphicon-stop"></i>
+<br> STOP $SERVICE_NAME
+</a>
+<a href="#" class="btn btn-primary col-sm-3" onClick="document.getElementById('CMD').value='reloadservice'; document.forms['servicecontrol'].submit(); return false;">
+<i class="glyphicon glyphicon-refresh"></i>
+<br> RELOAD $SERVICE_NAME
+</a>
+</div>
 
 
 <input type=hidden id=CMD name=CMD value='' />
@@ -280,21 +280,21 @@ $PROGRAMPATH/status.sh
 
 cat <<EOF
 </pre>
-			</div>
-	</div>
+</div>
+</div>
 </div>
 </div>
 
 <div class="col-md-6">
- <div class="panel panel-default">
-         <div class="panel-heading">
-               <h4>Live log</h4></div>
-                        <div class="panel-body">
-				<iframe src="/cgi-bin/logviewer.cgi" width=610 height=315>
-				</iframe>
-			</div>
-	</div>
- </div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<h4>Live log</h4></div>
+<div class="panel-body">
+<iframe src="/cgi-bin/logviewer.cgi" width=610 height=315>
+</iframe>
+</div>
+</div>
+</div>
 </div>
 
 </body>
